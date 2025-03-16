@@ -15,9 +15,11 @@ extends CharacterBody3D
 @export var defend_speed : float = 3.0
 @export var speed_falloff_delta : float = 0.5
 @export var acceleration : float = 0.75
+var speed_modifier : float = 1.0
 
 var movement_input : Vector2 = Vector2.ZERO
 var was_on_air : bool = false
+var weapon_active : bool = true
 
 @onready var camera : Camera3D = $CameraController/Camera3D
 @onready var godette_skin: Node3D = $GodetteSkin
@@ -62,7 +64,7 @@ func move_logic(delta : float) -> void:
 	
 	if movement_input != Vector2.ZERO:
 		vel_2d += movement_input * speed * acceleration
-		vel_2d = vel_2d.limit_length(speed)
+		vel_2d = vel_2d.limit_length(speed) * speed_modifier
 		velocity.x = vel_2d.x
 		velocity.z = vel_2d.y
 		godette_skin.set_move_state("Running")
@@ -80,6 +82,7 @@ func jump_logic(delta : float) -> void:
 	if is_on_floor():
 		if Input.is_action_just_pressed("jump"):
 			velocity.y = -jump_velocity
+			do_squash_and_stretch(1.2, 0.15)
 	else:
 		godette_skin.set_move_state("Aerial")
 	
@@ -90,7 +93,37 @@ func jump_logic(delta : float) -> void:
 
 
 func ability_logic() -> void:
-	if Input.is_action_just_pressed("ability"):
-		godette_skin.attack()
 	
+	# actual attack
+	if Input.is_action_just_pressed("ability"):
+		if weapon_active:
+			godette_skin.attack()
+		else:
+			godette_skin.cast_spell()
+			stop_movement(0.3, 0.8)
+	
+	# defend
 	defend = Input.is_action_pressed("block")
+	
+	#switch between weapon and magic
+	if Input.is_action_just_pressed("switch weapon") and !godette_skin.is_attacking:
+		weapon_active = not weapon_active
+		godette_skin.switch_weapon(weapon_active)
+		do_squash_and_stretch(0.8, 0.05)
+
+
+func stop_movement(start_duration : float, end_duration : float) -> void:
+	var tween : Tween = create_tween()
+	tween.tween_property(self, "speed_modifier", 0.0, start_duration)
+	tween.tween_property(self, "speed_modifier", 1.0, end_duration)
+
+
+func hit() -> void:
+	godette_skin.hit()
+	stop_movement(0.3, 0.8)
+
+
+func do_squash_and_stretch(value: float, duration: float = 0.1) -> void:
+	var tween : Tween = create_tween()
+	tween.tween_property(godette_skin, "squash_and_stretch", value, duration)
+	tween.tween_property(godette_skin, "squash_and_stretch", 1.0, duration * 1.8).set_ease(Tween.EASE_OUT)
