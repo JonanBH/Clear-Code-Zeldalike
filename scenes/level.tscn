@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://f1ci7n34jly2"]
+[gd_scene load_steps=7 format=3 uid="uid://f1ci7n34jly2"]
 
 [ext_resource type="PackedScene" uid="uid://oqu6lp6xcuv2" path="res://scenes/entities/player/player.tscn" id="1_2q6dc"]
+[ext_resource type="PackedScene" uid="uid://2hrxh0ejx5k2" path="res://scenes/entities/enemies/boss.tscn" id="2_w7c3h"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_w7c3h"]
 sky_top_color = Color(0.729412, 0.741176, 0.737255, 1)
@@ -55,3 +56,6 @@ size = Vector3(40, 0.5, 40)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/StaticBody3D2"]
 shape = SubResource("BoxShape3D_2q6dc")
+
+[node name="Boss" parent="." instance=ExtResource("2_w7c3h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.3893, 0, -5.41093)
