@@ -10,3 +10,7 @@ script = ExtResource("1_yfmsl")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="AttackTimer" type="Timer" parent="Timers"]
