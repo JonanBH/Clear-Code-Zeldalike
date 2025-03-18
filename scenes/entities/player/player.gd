@@ -35,6 +35,10 @@ var defend :bool = false:
 		defend = value
 		
 
+func _ready() -> void:
+	godette_skin.switch_weapon(weapon_active)
+
+
 func _process(_delta: float) -> void:
 	ability_logic()
 	

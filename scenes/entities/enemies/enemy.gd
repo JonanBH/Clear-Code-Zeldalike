@@ -8,12 +8,17 @@ extends CharacterBody3D
 @export var attack_radius : float = 3.0
 
 @onready var player = get_tree().get_first_node_in_group("Player")
-@onready var skin = get_node("Skin")
+@onready var skin : Node3D = get_node("Skin")
 @onready var move_state_machine = $AnimationTree.get('parameters/MoveStateMachine/playback')
 @onready var attack_animation : AnimationNodeAnimation = $AnimationTree.get_tree_root().get_node("AttackAnimation")
 @onready var speed : float = walk_speed
 
 var speed_modifier : float = 1.0
+var squash_and_stretch : float = 1.0:
+	set(value):
+		squash_and_stretch = value
+		var negative = 1.0 + (1.0 - squash_and_stretch)
+		skin.scale = Vector3(negative, squash_and_stretch , negative)
 
 var rng = RandomNumberGenerator.new()
 
@@ -38,3 +43,18 @@ func stop_movement(start_duration : float, end_duration : float) -> void:
 	var tween : Tween = create_tween()
 	tween.tween_property(self, "speed_modifier", 0.0, start_duration)
 	tween.tween_property(self, "speed_modifier", 1.0, end_duration)
+
+
+func hit() -> void:
+	if $Timers/InvulnerableTimer.time_left: 
+		return
+	
+	print("Enemy was hit")
+	do_squash_and_stretch(0.85, 0.1)
+	$Timers/InvulnerableTimer.start()
+
+
+func do_squash_and_stretch(value: float, duration: float = 0.1) -> void:
+	var tween : Tween = create_tween()
+	tween.tween_property(self, "squash_and_stretch", value, duration)
+	tween.tween_property(self, "squash_and_stretch", 1.0, duration * 1.8).set_ease(Tween.EASE_OUT)

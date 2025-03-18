@@ -65,3 +65,11 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 		tween.tween_method(_spin_transition, 1.0, 0.0, 0.3)
 		spinning = false
 		$Timers/AttackTimer.start()
+
+
+func hit() -> void:
+	if $Timers/InvulnerableTimer.time_left: 
+		return
+	
+	print("Boss was hit")
+	$Timers/InvulnerableTimer.start()
