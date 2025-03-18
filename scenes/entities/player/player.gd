@@ -35,7 +35,7 @@ var defend :bool = false:
 		defend = value
 		
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	ability_logic()
 	
 
